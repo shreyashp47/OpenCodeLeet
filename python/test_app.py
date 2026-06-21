@@ -7,7 +7,7 @@ from collections import OrderedDict
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app import app
-from challenges import CHALLENGES, DIFFICULTY_ORDER
+from loader import CHALLENGES, DIFFICULTY_ORDER
 from runner import CodeRunner
 
 

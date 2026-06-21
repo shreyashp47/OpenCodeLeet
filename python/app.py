@@ -6,10 +6,10 @@ from flask import Flask, render_template, request, jsonify
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from config import APP_NAME, APP_VERSION, HOST, PORT, DEBUG, EXECUTION_TIMEOUT
-from challenges import CHALLENGES, DIFFICULTY_ORDER
+from loader import CHALLENGES, DIFFICULTY_ORDER
 from runner import CodeRunner
 
-app = Flask(__name__, template_folder='templates', static_folder='static')
+app = Flask(__name__, template_folder='templates')
 runner = CodeRunner(timeout=EXECUTION_TIMEOUT)
 
 

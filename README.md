@@ -64,8 +64,8 @@ python3 python/test_app.py
 
 ## Adding a New Challenge
 
-1. Open `python/challenges.py`
-2. Append a new entry to the `CHALLENGES` dict with:
+1. Create a new `.py` file in the `challenges/` directory (e.g., `challenges/my-challenge.py`)
+2. Define a `CHALLENGE` dict with:
    - `id` — URL-safe slug
    - `title` — display name
    - `difficulty` — `"Easy"`, `"Medium"`, or `"Hard"`
@@ -73,15 +73,27 @@ python3 python/test_app.py
    - `starter_code` — Python `class Solution` with method stubs
    - `solution_code` — reference solution (revealed after 3 failed attempts)
    - `test_code` — assertion-based test harness that prints `ALL_TESTS_PASSED`, `TEST_FAILED:`, or `ERROR:`
+3. Restart the server — the loader picks up new files automatically
 
 ---
 
 ## Project Structure
 
 ```
+├── challenges/             One file per challenge (auto-loaded)
+│   ├── two-sum.py
+│   ├── reverse-string.py
+│   ├── palindrome-number.py
+│   ├── valid-parentheses.py
+│   ├── longest-substring.py
+│   ├── three-sum.py
+│   ├── group-anagrams.py
+│   ├── trapping-rain-water.py
+│   ├── first-missing-positive.py
+│   └── median-two-arrays.py
 ├── python/
 │   ├── app.py              Flask routes and server entrypoint
-│   ├── challenges.py       Static challenge definitions
+│   ├── loader.py           Loads all challenge files from ../challenges/
 │   ├── config.py           App configuration (timeout, port, etc.)
 │   ├── runner.py           Isolated subprocess code execution engine
 │   ├── test_app.py         Unit tests (unittest)
