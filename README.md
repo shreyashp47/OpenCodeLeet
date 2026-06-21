@@ -1,13 +1,13 @@
 # OpenCodeLeet
 
+> This repository was created to test the capabilities of [OpenCode](https://opencode.ai) and is for learning purposes only.
+
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0-000?logo=flask)](https://flask.palletsprojects.com)
 [![Tests](https://img.shields.io/badge/Tests-unittest-8A2BE2)](https://docs.python.org/3/library/unittest.html)
 [![OpenCode](https://img.shields.io/badge/OpenCode-Testing-amber)](https://opencode.ai)
 
 A local LeetCode-style coding challenge platform built with Flask. Solve algorithm problems in a web editor, run code against test cases on a local server, and get instant feedback — all without an internet connection.
-
-> This repository was created to test the capabilities of [OpenCode](https://opencode.ai) and is for learning purposes only.
 
 ![Screenshot](python/Screenshot%202026-06-21%20at%203.15.57%E2%80%AFPM.png)
 
