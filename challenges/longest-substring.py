@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "longest-substring",
-    "title": "3. Longest Substring Without Repeating Characters",
+    "title": "Longest Substring Without Repeating Characters",
     "difficulty": "Medium",
     "description": """<p>Given a string <code>s</code>, find the length of the <strong>longest substring</strong> without repeating characters.</p>
 
@@ -30,11 +30,21 @@ CHALLENGE = {
   <li><code>0 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>
   <li><code>s</code> consists of English letters, digits, symbols and spaces.</li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun lengthOfLongestSubstring(s: String): Int {
+        // Write your code here
+        return 0
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
         seen = {}
         left = result = 0
@@ -45,7 +55,25 @@ CHALLENGE = {
             result = max(result, right - left + 1)
         return result
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun lengthOfLongestSubstring(s: String): Int {
+        val seen = mutableMapOf<Char, Int>()
+        var left = 0
+        var result = 0
+        for ((right, ch) in s.withIndex()) {
+            if (ch in seen && seen[ch]!! >= left) {
+                left = seen[ch]!! + 1
+            }
+            seen[ch] = right
+            result = maxOf(result, right - left + 1)
+        }
+        return result
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -65,4 +93,22 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        require(sol.lengthOfLongestSubstring("abcabcbb") == 3) { "Test 1 failed. Expected 3" }
+        require(sol.lengthOfLongestSubstring("bbbbb") == 1) { "Test 2 failed. Expected 1" }
+        require(sol.lengthOfLongestSubstring("pwwkew") == 3) { "Test 3 failed. Expected 3" }
+        require(sol.lengthOfLongestSubstring("") == 0) { "Test 4 failed. Expected 0" }
+        require(sol.lengthOfLongestSubstring(" ") == 1) { "Test 5 failed. Expected 1" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

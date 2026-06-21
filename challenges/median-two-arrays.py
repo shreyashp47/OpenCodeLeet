@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "median-two-arrays",
-    "title": "4. Median of Two Sorted Arrays",
+    "title": "Median of Two Sorted Arrays",
     "difficulty": "Hard",
     "description": """<p>Given two sorted arrays <code>nums1</code> and <code>nums2</code> of size <code>m</code> and <code>n</code> respectively, return <strong>the median</strong> of the two sorted arrays.</p>
 <p>The overall run time complexity should be <code>O(log (m+n))</code>.</p>
@@ -25,11 +25,21 @@ CHALLENGE = {
   <li><code>1 &lt;= m + n &lt;= 2000</code></li>
   <li><code>-10<sup>6</sup> &lt;= nums1[i], nums2[i] &lt;= 10<sup>6</sup></code></li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun findMedianSortedArrays(nums1: IntArray, nums2: IntArray): Double {
+        // Write your code here
+        return 0.0
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
         if len(nums1) > len(nums2):
             nums1, nums2 = nums2, nums1
@@ -53,7 +63,42 @@ CHALLENGE = {
             else:
                 left = i + 1
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun findMedianSortedArrays(nums1: IntArray, nums2: IntArray): Double {
+        var a = nums1
+        var b = nums2
+        if (a.size > b.size) {
+            val tmp = a; a = b; b = tmp
+        }
+        val m = a.size
+        val n = b.size
+        val total = m + n
+        val half = total / 2
+        var left = 0
+        var right = m
+        while (left <= right) {
+            val i = (left + right) / 2
+            val j = half - i
+            val leftA = if (i > 0) a[i - 1].toDouble() else Double.NEGATIVE_INFINITY
+            val rightA = if (i < m) a[i].toDouble() else Double.POSITIVE_INFINITY
+            val leftB = if (j > 0) b[j - 1].toDouble() else Double.NEGATIVE_INFINITY
+            val rightB = if (j < n) b[j].toDouble() else Double.POSITIVE_INFINITY
+            if (leftA <= rightB && leftB <= rightA) {
+                return if (total % 2 == 1) minOf(rightA, rightB)
+                else (maxOf(leftA, leftB) + minOf(rightA, rightB)) / 2.0
+            } else if (leftA > rightB) {
+                right = i - 1
+            } else {
+                left = i + 1
+            }
+        }
+        return 0.0
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -73,4 +118,22 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        require(kotlin.math.abs(sol.findMedianSortedArrays(intArrayOf(1,3), intArrayOf(2)) - 2.0) < 1e-5) { "Test 1 failed" }
+        require(kotlin.math.abs(sol.findMedianSortedArrays(intArrayOf(1,2), intArrayOf(3,4)) - 2.5) < 1e-5) { "Test 2 failed" }
+        require(kotlin.math.abs(sol.findMedianSortedArrays(intArrayOf(0,0), intArrayOf(0,0)) - 0.0) < 1e-5) { "Test 3 failed" }
+        require(kotlin.math.abs(sol.findMedianSortedArrays(intArrayOf(), intArrayOf(1)) - 1.0) < 1e-5) { "Test 4 failed" }
+        require(kotlin.math.abs(sol.findMedianSortedArrays(intArrayOf(2), intArrayOf()) - 2.0) < 1e-5) { "Test 5 failed" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

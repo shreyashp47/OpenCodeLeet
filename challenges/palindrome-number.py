@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "palindrome-number",
-    "title": "9. Palindrome Number",
+    "title": "Palindrome Number",
     "difficulty": "Easy",
     "description": """<p>Given an integer <code>x</code>, return <code>true</code> if <code>x</code> is a <strong>palindrome</strong>, and <code>false</code> otherwise.</p>
 
@@ -29,11 +29,21 @@ CHALLENGE = {
 <ul class="list-disc pl-5 space-y-1 text-gray-300">
   <li><code>-2<sup>31</sup> &lt;= x &lt;= 2<sup>31</sup> - 1</code></li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def isPalindrome(self, x: int) -> bool:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun isPalindrome(x: Int): Boolean {
+        // Write your code here
+        return false
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def isPalindrome(self, x: int) -> bool:
         if x < 0 or (x % 10 == 0 and x != 0):
             return False
@@ -43,7 +53,22 @@ CHALLENGE = {
             x //= 10
         return x == reversed_half or x == reversed_half // 10
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun isPalindrome(x: Int): Boolean {
+        if (x < 0 || (x % 10 == 0 && x != 0)) return false
+        var num = x
+        var reversed = 0
+        while (num > reversed) {
+            reversed = reversed * 10 + num % 10
+            num /= 10
+        }
+        return num == reversed || num == reversed / 10
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -61,4 +86,21 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        require(sol.isPalindrome(121) == true) { "Test 1 failed. Expected true for 121" }
+        require(sol.isPalindrome(-121) == false) { "Test 2 failed. Expected false for -121" }
+        require(sol.isPalindrome(10) == false) { "Test 3 failed. Expected false for 10" }
+        require(sol.isPalindrome(12321) == true) { "Test 4 failed. Expected true for 12321" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

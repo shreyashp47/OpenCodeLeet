@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "group-anagrams",
-    "title": "49. Group Anagrams",
+    "title": "Group Anagrams",
     "difficulty": "Medium",
     "description": """<p>Given an array of strings <code>strs</code>, group <strong>the anagrams</strong> together. You can return the answer in <strong>any order</strong>.</p>
 <p>An <strong>anagram</strong> is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.</p>
@@ -29,11 +29,21 @@ CHALLENGE = {
   <li><code>0 &lt;= strs[i].length &lt;= 100</code></li>
   <li><code>strs[i]</code> consists of lowercase English letters.</li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def groupAnagrams(self, strs: list[str]) -> list[list[str]]:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun groupAnagrams(strs: Array<String>): List<List<String>> {
+        // Write your code here
+        return emptyList()
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def groupAnagrams(self, strs: list[str]) -> list[list[str]]:
         groups = {}
         for s in strs:
@@ -44,7 +54,20 @@ CHALLENGE = {
                 groups[key] = [s]
         return list(groups.values())
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun groupAnagrams(strs: Array<String>): List<List<String>> {
+        val groups = mutableMapOf<String, MutableList<String>>()
+        for (s in strs) {
+            val key = s.toCharArray().sorted().joinToString("")
+            groups.getOrPut(key) { mutableListOf() }.add(s)
+        }
+        return groups.values.toList()
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -62,4 +85,23 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        val res1 = sol.groupAnagrams(arrayOf("eat","tea","tan","ate","nat","bat"))
+        require(res1.size == 3) { "Test 1 failed. Expected 3 groups" }
+        val res2 = sol.groupAnagrams(arrayOf(""))
+        require(res2.size == 1 && res2[0].size == 1) { "Test 2 failed" }
+        val res3 = sol.groupAnagrams(arrayOf("a"))
+        require(res3.size == 1 && res3[0][0] == "a") { "Test 3 failed" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

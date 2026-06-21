@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "first-missing-positive",
-    "title": "41. First Missing Positive",
+    "title": "First Missing Positive",
     "difficulty": "Hard",
     "description": """<p>Given an unsorted integer array <code>nums</code>, return the <strong>smallest positive integer</strong> that is <strong>not present</strong> in <code>nums</code>.</p>
 <p>You must implement an algorithm that runs in <code>O(n)</code> time and uses <code>O(1)</code> auxiliary space.</p>
@@ -31,11 +31,21 @@ CHALLENGE = {
   <li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>
   <li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def firstMissingPositive(self, nums: list[int]) -> int:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun firstMissingPositive(nums: IntArray): Int {
+        // Write your code here
+        return 1
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def firstMissingPositive(self, nums: list[int]) -> int:
         n = len(nums)
         for i in range(n):
@@ -46,7 +56,26 @@ CHALLENGE = {
                 return i + 1
         return n + 1
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun firstMissingPositive(nums: IntArray): Int {
+        val n = nums.size
+        for (i in 0 until n) {
+            while (nums[i] in 1..n && nums[nums[i] - 1] != nums[i]) {
+                val tmp = nums[nums[i] - 1]
+                nums[nums[i] - 1] = nums[i]
+                nums[i] = tmp
+            }
+        }
+        for (i in 0 until n) {
+            if (nums[i] != i + 1) return i + 1
+        }
+        return n + 1
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -66,4 +95,22 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        require(sol.firstMissingPositive(intArrayOf(1,2,0)) == 3) { "Test 1 failed" }
+        require(sol.firstMissingPositive(intArrayOf(3,4,-1,1)) == 2) { "Test 2 failed" }
+        require(sol.firstMissingPositive(intArrayOf(7,8,9,11,12)) == 1) { "Test 3 failed" }
+        require(sol.firstMissingPositive(intArrayOf(1,2,3)) == 4) { "Test 4 failed" }
+        require(sol.firstMissingPositive(intArrayOf(-1,-2)) == 1) { "Test 5 failed" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

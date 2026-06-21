@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "trapping-rain-water",
-    "title": "42. Trapping Rain Water",
+    "title": "Trapping Rain Water",
     "difficulty": "Hard",
     "description": """<p>Given <code>n</code> non-negative integers representing an elevation map where the width of each bar is <code>1</code>, compute how much water it can trap after raining.</p>
 
@@ -23,11 +23,21 @@ CHALLENGE = {
   <li><code>1 &lt;= n &lt;= 2 * 10<sup>4</sup></code></li>
   <li><code>0 &lt;= height[i] &lt;= 10<sup>5</sup></code></li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def trap(self, height: list[int]) -> int:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun trap(height: IntArray): Int {
+        // Write your code here
+        return 0
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def trap(self, height: list[int]) -> int:
         left, right = 0, len(height) - 1
         left_max = right_max = water = 0
@@ -46,7 +56,31 @@ CHALLENGE = {
                 right -= 1
         return water
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun trap(height: IntArray): Int {
+        var left = 0
+        var right = height.size - 1
+        var leftMax = 0
+        var rightMax = 0
+        var water = 0
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] >= leftMax) leftMax = height[left]
+                else water += leftMax - height[left]
+                left++
+            } else {
+                if (height[right] >= rightMax) rightMax = height[right]
+                else water += rightMax - height[right]
+                right--
+            }
+        }
+        return water
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -66,4 +100,21 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        require(sol.trap(intArrayOf(0,1,0,2,1,0,1,3,2,1,2,1)) == 6) { "Test 1 failed" }
+        require(sol.trap(intArrayOf(4,2,0,3,2,5)) == 9) { "Test 2 failed" }
+        require(sol.trap(intArrayOf(1,0,1)) == 1) { "Test 3 failed" }
+        require(sol.trap(intArrayOf(5)) == 0) { "Test 4 failed" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

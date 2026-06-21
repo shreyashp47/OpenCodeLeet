@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
 
     <style>
         .CodeMirror { height: 100% !important; font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; }
@@ -72,7 +73,7 @@
                     </div>
                     <div class="space-y-0.5">
                         {% for ch_id, ch in items %}
-                        <a href="?challenge={{ ch_id }}"
+                        <a href="?challenge={{ ch_id }}&language={{ current_language }}"
                            class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-150 group
                                   {% if ch_id == current_challenge.id %}
                                   bg-zinc-800 text-amber-400 border border-zinc-700/50 shadow-sm
@@ -133,9 +134,12 @@
             <section class="w-1/2 flex flex-col bg-zinc-900 overflow-hidden">
                 <div class="h-12 bg-zinc-900/80 border-b border-zinc-800 px-4 flex items-center justify-between shrink-0">
                     <div class="flex items-center space-x-2">
-                        <span class="text-xs font-semibold uppercase bg-zinc-800 text-amber-400 px-2 py-1 rounded border border-zinc-700/50">
-                            <i class="fa-brands fa-python mr-1"></i>Python 3
-                        </span>
+                        <select id="language-select" onchange="changeLanguage(this.value)"
+                                class="text-xs bg-zinc-800 text-amber-400 px-2 py-1 rounded border border-zinc-700/50 font-semibold cursor-pointer hover:bg-zinc-700 transition-colors outline-none focus:ring-1 focus:ring-amber-500/50">
+                            {% for lang in languages %}
+                            <option value="{{ lang }}" {% if lang == current_language %}selected{% endif %}>{{ lang|capitalize }}</option>
+                            {% endfor %}
+                        </select>
                         <span id="save-status" class="text-xs text-zinc-500 italic">Saved locally</span>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -236,19 +240,23 @@
 
     <script>
         const challengeId = "{{ current_challenge.id }}";
+        const currentLanguage = "{{ current_language }}";
         const starterCode = `{{ current_challenge.starter_code | safe }}`;
         const solutionCode = `{{ current_challenge.solution_code | safe }}`;
+
+        const LANG_KEY = `code_${challengeId}_${currentLanguage}`;
+        const FAIL_KEY = `fails_${challengeId}_${currentLanguage}`;
 
         let editor;
         let isConsoleExpanded = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             const textarea = document.getElementById("editor");
-            const savedCode = localStorage.getItem(`code_${challengeId}`);
+            const savedCode = localStorage.getItem(LANG_KEY);
 
             editor = CodeMirror.fromTextArea(textarea, {
                 lineNumbers: true,
-                mode: "python",
+                mode: currentLanguage === 'kotlin' ? 'text/x-kotlin' : 'python',
                 theme: "dracula",
                 indentUnit: 4,
                 tabSize: 4,
@@ -262,14 +270,14 @@
 
             editor.on("change", () => {
                 clearErrorLine();
-                localStorage.setItem(`code_${challengeId}`, editor.getValue());
+                localStorage.setItem(LANG_KEY, editor.getValue());
                 const el = document.getElementById("save-status");
                 el.textContent = "Saving...";
                 clearTimeout(el._timer);
                 el._timer = setTimeout(() => { el.textContent = "Saved locally"; }, 500);
             });
 
-            const savedFails = parseInt(localStorage.getItem(`fails_${challengeId}`) || "0");
+            const savedFails = parseInt(localStorage.getItem(FAIL_KEY) || "0");
             if (savedFails >= 3) {
                 showSolution();
                 document.getElementById("solution-code-block").classList.add("hidden");
@@ -283,11 +291,16 @@
             }
         });
 
+        function changeLanguage(lang) {
+            localStorage.setItem(LANG_KEY, editor.getValue());
+            window.location.href = `?challenge=${challengeId}&language=${lang}`;
+        }
+
         function resetCode() {
             if (confirm("Reset your code for this challenge? This will overwrite your current progress.")) {
                 editor.setValue(starterCode);
-                localStorage.removeItem(`code_${challengeId}`);
-                localStorage.removeItem(`fails_${challengeId}`);
+                localStorage.removeItem(LANG_KEY);
+                localStorage.removeItem(FAIL_KEY);
                 document.getElementById("solution-section").classList.add("hidden");
                 document.getElementById("solution-code-block").classList.add("hidden");
                 document.getElementById("result-wrapper").classList.add("hidden");
@@ -417,7 +430,7 @@
                 const resp = await fetch(`/run/${challengeId}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({code: userCode})
+                    body: JSON.stringify({code: userCode, language: currentLanguage})
                 });
                 const data = await resp.json();
 
@@ -453,16 +466,15 @@
 
                 showErrorLine(data.error_line);
 
-                const failKey = `fails_${challengeId}`;
-                let fails = parseInt(localStorage.getItem(failKey) || "0");
+                let fails = parseInt(localStorage.getItem(FAIL_KEY) || "0");
                 if (data.success) {
                     fails = 0;
-                    localStorage.removeItem(failKey);
+                    localStorage.removeItem(FAIL_KEY);
                     document.getElementById("solution-section").classList.add("hidden");
                     document.getElementById("solution-code-block").classList.add("hidden");
                 } else if (data.status !== "Error" && data.status !== "System Error") {
                     fails += 1;
-                    localStorage.setItem(failKey, fails.toString());
+                    localStorage.setItem(FAIL_KEY, fails.toString());
                     if (fails >= 3) {
                         showSolution();
                     } else {

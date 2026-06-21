@@ -12,6 +12,16 @@ from runner import CodeRunner
 app = Flask(__name__, template_folder='templates')
 runner = CodeRunner(timeout=EXECUTION_TIMEOUT)
 
+LANGUAGES = ['python', 'kotlin']
+
+
+def _resolve_challenge(challenge, language):
+    flat = dict(challenge)
+    for key in ('starter_code', 'solution_code', 'test_code'):
+        val = challenge.get(key, {})
+        flat[key] = val.get(language, val.get('python', val))
+    return flat
+
 
 @app.route('/')
 def index():
@@ -19,7 +29,11 @@ def index():
     if challenge_id not in CHALLENGES:
         challenge_id = 'two-sum'
 
-    challenge = CHALLENGES[challenge_id]
+    language = request.args.get('language', 'python')
+    if language not in LANGUAGES:
+        language = 'python'
+
+    challenge = _resolve_challenge(CHALLENGES[challenge_id], language)
 
     grouped = OrderedDict()
     for diff in DIFFICULTY_ORDER:
@@ -32,7 +46,9 @@ def index():
                            app_version=APP_VERSION,
                            challenges=CHALLENGES,
                            grouped_challenges=grouped,
-                           current_challenge=challenge)
+                           current_challenge=challenge,
+                           current_language=language,
+                           languages=LANGUAGES)
 
 
 @app.route('/run/<challenge_id>', methods=['POST'])
@@ -42,13 +58,18 @@ def run_code(challenge_id):
 
     data = request.get_json() or {}
     user_code = data.get('code', '')
+    language = data.get('language', 'python')
+
+    if language not in LANGUAGES:
+        language = 'python'
 
     if not user_code.strip():
         return jsonify(success=False, status="Error", message="Code cannot be empty.")
 
     challenge = CHALLENGES[challenge_id]
-    full_code = f"{user_code}\n\n{challenge['test_code']}"
-    result = runner.run(full_code)
+    test_code = challenge.get('test_code', {}).get(language, challenge.get('test_code', ''))
+    full_code = f"{user_code}\n\n{test_code}"
+    result = runner.run(full_code, language=language)
 
     return jsonify(result)
 

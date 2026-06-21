@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "reverse-string",
-    "title": "344. Reverse String",
+    "title": "Reverse String",
     "difficulty": "Easy",
     "description": """<p>Write a function that reverses a string. The input string is given as an array of characters <code>s</code>.</p>
 <p>You must do this by modifying the input array <strong>in-place</strong> with <code>O(1)</code> extra memory.</p>
@@ -22,14 +22,23 @@ CHALLENGE = {
   <li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>
   <li><code>s[i]</code> is a printable ascii character.</li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def reverseString(self, s: list[str]) -> None:
         \"\"\"
         Do not return anything, modify s in-place instead.
         \"\"\"
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun reverseString(s: CharArray): Unit {
+        // Write your code here
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def reverseString(self, s: list[str]) -> None:
         left, right = 0, len(s) - 1
         while left < right:
@@ -37,7 +46,23 @@ CHALLENGE = {
             left += 1
             right -= 1
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun reverseString(s: CharArray) {
+        var left = 0
+        var right = s.size - 1
+        while (left < right) {
+            val tmp = s[left]
+            s[left] = s[right]
+            s[right] = tmp
+            left++
+            right--
+        }
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -56,4 +81,26 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        val s1 = charArrayOf('h','e','l','l','o')
+        sol.reverseString(s1)
+        require(s1 contentEquals charArrayOf('o','l','l','e','h')) { "Test 1 failed. Got ${s1.contentToString()}" }
+        val s2 = charArrayOf('H','a','n','n','a','h')
+        sol.reverseString(s2)
+        require(s2 contentEquals charArrayOf('h','a','n','n','a','H')) { "Test 2 failed. Got ${s2.contentToString()}" }
+        val s3 = charArrayOf('a')
+        sol.reverseString(s3)
+        require(s3 contentEquals charArrayOf('a')) { "Test 3 failed. Got ${s3.contentToString()}" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }

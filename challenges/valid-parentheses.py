@@ -1,6 +1,6 @@
 CHALLENGE = {
     "id": "valid-parentheses",
-    "title": "20. Valid Parentheses",
+    "title": "Valid Parentheses",
     "difficulty": "Easy",
     "description": """<p>Given a string <code>s</code> containing just the characters <code>'('</code>, <code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code> and <code>']'</code>, determine if the input string is valid.</p>
 <p>An input string is valid if:</p>
@@ -33,11 +33,21 @@ CHALLENGE = {
   <li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>
   <li><code>s</code> consists of parentheses only <code>'()[]{}'</code>.</li>
 </ul>""",
-    "starter_code": """class Solution:
+    "starter_code": {
+        "python": """class Solution:
     def isValid(self, s: str) -> bool:
         pass
 """,
-    "solution_code": """class Solution:
+        "kotlin": """class Solution {
+    fun isValid(s: String): Boolean {
+        // Write your code here
+        return false
+    }
+}
+""",
+    },
+    "solution_code": {
+        "python": """class Solution:
     def isValid(self, s: str) -> bool:
         pairs = {')': '(', '}': '{', ']': '['}
         stack = []
@@ -49,7 +59,25 @@ CHALLENGE = {
                 stack.append(ch)
         return not stack
 """,
-    "test_code": """
+        "kotlin": """class Solution {
+    fun isValid(s: String): Boolean {
+        val pairs = mapOf(')' to '(', '}' to '{', ']' to '[')
+        val stack = mutableListOf<Char>()
+        for (ch in s) {
+            when (ch) {
+                in pairs -> {
+                    if (stack.isEmpty() || stack.removeLast() != pairs[ch]) return false
+                }
+                else -> stack.add(ch)
+            }
+        }
+        return stack.isEmpty()
+    }
+}
+""",
+    },
+    "test_code": {
+        "python": """
 if __name__ == "__main__":
     try:
         sol = Solution()
@@ -64,4 +92,22 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"ERROR: {e}")
 """,
+        "kotlin": """
+fun main() {
+    try {
+        val sol = Solution()
+        require(sol.isValid("()") == true) { "Test 1 failed. Expected true for '()'" }
+        require(sol.isValid("()[]{}") == true) { "Test 2 failed. Expected true for '()[]{}'" }
+        require(sol.isValid("(]") == false) { "Test 3 failed. Expected false for '(]'" }
+        require(sol.isValid("([)]") == false) { "Test 4 failed. Expected false for '([)]'" }
+        require(sol.isValid("{[]}") == true) { "Test 5 failed. Expected true for '{[]}'" }
+        println("ALL_TESTS_PASSED")
+    } catch (e: IllegalArgumentException) {
+        println("TEST_FAILED: ${e.message}")
+    } catch (e: Exception) {
+        println("ERROR: ${e.message}")
+    }
+}
+""",
+    },
 }
