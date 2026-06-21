@@ -12,6 +12,10 @@ def _challenge_sort_key(ch):
     return num
 
 
+def _strip_number(title):
+    return re.sub(r'^\d+\.\s*', '', title)
+
+
 def _load_challenges():
     items = []
     for fname in os.listdir(CHALLENGES_DIR):
@@ -20,7 +24,9 @@ def _load_challenges():
             spec = importlib.util.spec_from_file_location(fname[:-3], path)
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
-            items.append(mod.CHALLENGE)
+            ch = mod.CHALLENGE
+            ch['title'] = _strip_number(ch['title'])
+            items.append(ch)
 
     items.sort(key=_challenge_sort_key)
     return {ch['id']: ch for ch in items}

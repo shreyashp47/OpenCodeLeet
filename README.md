@@ -13,22 +13,7 @@ A local LeetCode-style coding challenge platform built with Flask. Solve algorit
 
 ---
 
-## Challenges
 
-| # | Title | Difficulty |
-|---|-------|------------|
-| 1 | [Two Sum](https://leetcode.com/problems/two-sum/) | Easy |
-| 9 | [Palindrome Number](https://leetcode.com/problems/palindrome-number/) | Easy |
-| 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | Easy |
-| 344 | [Reverse String](https://leetcode.com/problems/reverse-string/) | Easy |
-| 3 | [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | Medium |
-| 15 | [3Sum](https://leetcode.com/problems/3sum/) | Medium |
-| 49 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Medium |
-| 4 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Hard |
-| 41 | [First Missing Positive](https://leetcode.com/problems/first-missing-positive/) | Hard |
-| 42 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | Hard |
-
----
 
 ## Quick Start
 
