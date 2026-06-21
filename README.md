@@ -4,6 +4,8 @@ A local LeetCode-style coding challenge platform built with Flask.
 
 Solve algorithm problems in a web editor, run code against test cases on a local server, and get instant feedback — all without an internet connection.
 
+> This repository is created to test the capabilities of [OpenCode](https://opencode.ai) and is for learning purposes only.
+
 ![Screenshot](python/Screenshot%202026-06-21%20at%203.15.57%E2%80%AFPM.png)
 
 ## Features
