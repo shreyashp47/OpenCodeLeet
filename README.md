@@ -9,6 +9,8 @@
 
 A local LeetCode-style coding challenge platform supporting **Python** and **Kotlin**. Solve algorithm problems in a web editor, run code against test cases on a local server, and get instant feedback.
 
+![Screenshot](ss/HomePage.png)
+
 ## Quick Start
 
 ```sh
