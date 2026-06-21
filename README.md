@@ -41,6 +41,17 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 > **Tip:** Press `Ctrl+Enter` (or `Cmd+Enter` on Mac) to run code without clicking the button.
 
+## Features
+
+- **Code editor** with syntax highlighting, line numbers, and bracket matching (CodeMirror)
+- **Server-side execution** in an isolated subprocess with a 3-second timeout
+- **Test result parsing** — results extracted from stdout markers (`ALL_TESTS_PASSED`, `TEST_FAILED:`, `ERROR:`)
+- **Solution unlock** — after 3 failed attempts on a challenge, a reference solution is revealed
+- **`Ctrl+Enter` / `Cmd+Enter`** keyboard shortcut to run code
+- **Auto-save** — code is persisted to `localStorage` per challenge, survives page reloads
+- **Difficulty-based sidebar** — challenges grouped by Easy / Medium / Hard with color-coded badges
+- **Execution timing** — displays elapsed time in milliseconds for each run
+
 ---
 
 ## Run Tests
@@ -60,6 +71,7 @@ python3 python/test_app.py
    - `difficulty` — `"Easy"`, `"Medium"`, or `"Hard"`
    - `description` — HTML string (uses existing Tailwind classes in examples)
    - `starter_code` — Python `class Solution` with method stubs
+   - `solution_code` — reference solution (revealed after 3 failed attempts)
    - `test_code` — assertion-based test harness that prints `ALL_TESTS_PASSED`, `TEST_FAILED:`, or `ERROR:`
 
 ---
@@ -89,6 +101,7 @@ python3 python/test_app.py
 | Frontend | Tailwind CSS, CodeMirror, FontAwesome |
 | Testing | unittest |
 | Execution | Subprocess with 3s timeout |
+| Solution Reveal | Unlocked after 3 failed attempts per challenge |
 
 ---
 
