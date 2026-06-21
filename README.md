@@ -1,20 +1,34 @@
 # OpenCodeLeet
 
-A local LeetCode-style coding challenge platform built with Flask.
+[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.0-000?logo=flask)](https://flask.palletsprojects.com)
+[![Tests](https://img.shields.io/badge/Tests-unittest-8A2BE2)](https://docs.python.org/3/library/unittest.html)
+[![OpenCode](https://img.shields.io/badge/OpenCode-Testing-amber)](https://opencode.ai)
 
-Solve algorithm problems in a web editor, run code against test cases on a local server, and get instant feedback — all without an internet connection.
+A local LeetCode-style coding challenge platform built with Flask. Solve algorithm problems in a web editor, run code against test cases on a local server, and get instant feedback — all without an internet connection.
 
-> This repository is created to test the capabilities of [OpenCode](https://opencode.ai) and is for learning purposes only.
+> This repository was created to test the capabilities of [OpenCode](https://opencode.ai) and is for learning purposes only.
 
 ![Screenshot](python/Screenshot%202026-06-21%20at%203.15.57%E2%80%AFPM.png)
 
-## Features
+---
 
-- Code editor with syntax highlighting (CodeMirror)
-- Server-side code execution with 3-second timeout
-- Multiple challenges: Two Sum, Reverse String, Palindrome Number, Valid Parentheses
-- Code auto-saved to `localStorage`
-- Dark-themed UI (Tailwind CSS)
+## Challenges
+
+| # | Title | Difficulty |
+|---|-------|------------|
+| 1 | [Two Sum](https://leetcode.com/problems/two-sum/) | Easy |
+| 9 | [Palindrome Number](https://leetcode.com/problems/palindrome-number/) | Easy |
+| 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | Easy |
+| 344 | [Reverse String](https://leetcode.com/problems/reverse-string/) | Easy |
+| 3 | [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | Medium |
+| 15 | [3Sum](https://leetcode.com/problems/3sum/) | Medium |
+| 49 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Medium |
+| 4 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | Hard |
+| 41 | [First Missing Positive](https://leetcode.com/problems/first-missing-positive/) | Hard |
+| 42 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | Hard |
+
+---
 
 ## Quick Start
 
@@ -23,7 +37,11 @@ pip install flask
 python3 python/app.py
 ```
 
-Open http://127.0.0.1:5000 in your browser.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+
+> **Tip:** Press `Ctrl+Enter` (or `Cmd+Enter` on Mac) to run code without clicking the button.
+
+---
 
 ## Run Tests
 
@@ -31,24 +49,49 @@ Open http://127.0.0.1:5000 in your browser.
 python3 python/test_app.py
 ```
 
-## Adding a Challenge
+---
 
-Edit `python/challenges.py` and append a new entry to the `CHALLENGES` dict with `starter_code`, `test_code`, and `description` fields.
+## Adding a New Challenge
+
+1. Open `python/challenges.py`
+2. Append a new entry to the `CHALLENGES` dict with:
+   - `id` — URL-safe slug
+   - `title` — display name
+   - `difficulty` — `"Easy"`, `"Medium"`, or `"Hard"`
+   - `description` — HTML string (uses existing Tailwind classes in examples)
+   - `starter_code` — Python `class Solution` with method stubs
+   - `test_code` — assertion-based test harness that prints `ALL_TESTS_PASSED`, `TEST_FAILED:`, or `ERROR:`
+
+---
 
 ## Project Structure
 
 ```
 ├── python/
-│   ├── app.py              # Flask server
-│   ├── challenges.py       # Challenge definitions
-│   ├── test_app.py         # Unit tests (unittest)
+│   ├── app.py              Flask routes and server entrypoint
+│   ├── challenges.py       Static challenge definitions
+│   ├── config.py           App configuration (timeout, port, etc.)
+│   ├── runner.py           Isolated subprocess code execution engine
+│   ├── test_app.py         Unit tests (unittest)
 │   └── templates/
-│       └── index.html      # Single-page frontend
-└── AGENTS.md
+│       └── index.html      Single-page frontend (Tailwind + CodeMirror)
+├── AGENTS.md               OpenCode agent instructions
+└── README.md
 ```
+
+---
 
 ## Tech Stack
 
-- **Backend:** Python, Flask
-- **Frontend:** Tailwind CSS, CodeMirror, FontAwesome
-- **Testing:** unittest
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python, Flask |
+| Frontend | Tailwind CSS, CodeMirror, FontAwesome |
+| Testing | unittest |
+| Execution | Subprocess with 3s timeout |
+
+---
+
+## License
+
+This project is for educational purposes. Challenge problems are sourced from [LeetCode](https://leetcode.com/).
