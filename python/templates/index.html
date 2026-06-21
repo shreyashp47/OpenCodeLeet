@@ -3,121 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ current_challenge.title }} - OpenCode Leet</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <title>{{ current_challenge.title }} - {{ app_name }}</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
-    
-    <!-- CodeMirror JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
 
     <style>
-        /* CodeMirror Custom Styling to fit container height */
-        .CodeMirror {
-            height: 100% !important;
-            font-family: 'Fira Code', 'Courier New', Courier, monospace;
-            font-size: 14px;
-        }
-        /* Custom scrollbar for beautiful dark UI */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #18181b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3f3f46;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #52525b;
-        }
+        .CodeMirror { height: 100% !important; font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #18181b; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in { animation: slideIn 0.2s ease-out; }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
 
-    <!-- Top Navigation Bar -->
     <header class="bg-zinc-900 border-b border-zinc-800 px-6 py-3 flex items-center justify-between shrink-0">
         <div class="flex items-center space-x-3">
             <div class="bg-gradient-to-tr from-amber-500 to-orange-600 p-2 rounded-lg text-white shadow-lg shadow-orange-500/20">
                 <i class="fa-solid fa-code text-lg"></i>
             </div>
             <div>
-                <span class="font-bold text-lg tracking-wider text-white">OpenCode<span class="text-amber-500">Leet</span></span>
-                <span class="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded ml-2 border border-zinc-700">v1.0.0 (Local)</span>
+                <span class="font-bold text-lg tracking-wider text-white">{{ app_name }}</span>
+                <span class="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded ml-2 border border-zinc-700">v{{ app_version }}</span>
             </div>
         </div>
-        
         <div class="flex items-center space-x-4">
             <span class="text-sm text-zinc-400">
                 <i class="fa-solid fa-server text-emerald-500 mr-1.5 animate-pulse"></i> Local Execution Server Running
             </span>
+            <kbd class="hidden sm:inline-flex text-xs bg-zinc-800 text-zinc-400 px-2 py-1 rounded border border-zinc-700 font-mono">
+                <span class="text-amber-500 font-bold">Ctrl</span><span class="mx-0.5">+</span><span class="text-amber-500 font-bold">Enter</span> to run
+            </kbd>
         </div>
     </header>
 
-    <!-- Main Workspace -->
     <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Sidebar - Challenges List -->
+
         <aside class="w-64 bg-zinc-900/50 border-r border-zinc-800 flex flex-col shrink-0">
             <div class="p-4 border-b border-zinc-800">
                 <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center">
                     <i class="fa-solid fa-list-check mr-2 text-amber-500"></i> Code Challenges
+                    <span class="ml-auto text-[10px] text-zinc-500 font-normal">{{ challenges|length }}</span>
                 </h2>
             </div>
-            <nav class="flex-1 overflow-y-auto p-2 space-y-1">
-                {% for ch_id, ch in challenges.items() %}
-                <a href="?challenge={{ ch_id }}" 
-                   class="flex items-center justify-between p-3 rounded-lg text-sm transition-all duration-150 group 
-                          {% if ch_id == current_challenge.id %}
-                          bg-zinc-800 text-amber-400 border border-zinc-700/50 shadow-md shadow-zinc-950/20
-                          {% else %}
-                          text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-200
-                          {% endif %}">
-                    <div class="truncate mr-2">
-                        <p class="font-medium truncate">{{ ch.title }}</p>
+            <nav class="flex-1 overflow-y-auto p-2 space-y-3">
+                {% for difficulty, items in grouped_challenges.items() %}
+                <div>
+                    <div class="flex items-center space-x-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest
+                                {% if difficulty == 'Easy' %}text-emerald-400
+                                {% elif difficulty == 'Medium' %}text-amber-400
+                                {% else %}text-rose-400{% endif %}">
+                        <i class="fa-solid
+                                {% if difficulty == 'Easy' %}fa-circle
+                                {% elif difficulty == 'Medium' %}fa-circle-half-stroke
+                                {% else %}fa-circle{% endif %} text-[6px]"></i>
+                        <span>{{ difficulty }}</span>
+                        <span class="text-zinc-600 font-normal">({{ items|length }})</span>
                     </div>
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded shrink-0
-                                 {% if ch.difficulty == 'Easy' %}
-                                 bg-emerald-950/40 text-emerald-400 border border-emerald-900/40
-                                 {% elif ch.difficulty == 'Medium' %}
-                                 bg-amber-950/40 text-amber-400 border border-amber-900/40
-                                 {% else %}
-                                 bg-rose-950/40 text-rose-400 border border-rose-900/40
-                                 {% endif %}">
-                        {{ ch.difficulty }}
-                    </span>
-                </a>
+                    <div class="space-y-0.5">
+                        {% for ch_id, ch in items %}
+                        <a href="?challenge={{ ch_id }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-150 group
+                                  {% if ch_id == current_challenge.id %}
+                                  bg-zinc-800 text-amber-400 border border-zinc-700/50 shadow-sm
+                                  {% else %}
+                                  text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-200
+                                  {% endif %}">
+                            <span class="truncate mr-2 text-xs">{{ ch.title }}</span>
+                            <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0
+                                         {% if ch.difficulty == 'Easy' %}
+                                         bg-emerald-950/40 text-emerald-400 border border-emerald-900/40
+                                         {% elif ch.difficulty == 'Medium' %}
+                                         bg-amber-950/40 text-amber-400 border border-amber-900/40
+                                         {% else %}
+                                         bg-rose-950/40 text-rose-400 border border-rose-900/40
+                                         {% endif %}">
+                                {{ ch.difficulty }}
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% endfor %}
             </nav>
-            <div class="p-4 border-t border-zinc-800 bg-zinc-900/30 text-xs text-zinc-500 text-center">
-                Powered by Python & Flask
+            <div class="p-3 border-t border-zinc-800 bg-zinc-900/30 text-[10px] text-zinc-500 text-center">
+                Powered by Python &amp; Flask
             </div>
         </aside>
 
-        <!-- Dynamic Splitscreen Workspace (Problem & Code Editor) -->
         <main class="flex-1 flex overflow-hidden">
-            
-            <!-- Left Panel: Problem Statement -->
+
             <section class="w-1/2 flex flex-col bg-zinc-950 border-r border-zinc-800 overflow-hidden">
-                <!-- Tabs -->
                 <div class="flex border-b border-zinc-800 bg-zinc-900/30 shrink-0">
                     <button class="px-5 py-3 border-b-2 border-amber-500 text-amber-400 text-sm font-semibold flex items-center space-x-2">
                         <i class="fa-regular fa-file-lines"></i>
                         <span>Description</span>
                     </button>
                 </div>
-                
-                <!-- Description Body -->
                 <div class="flex-1 overflow-y-auto p-6 space-y-6">
                     <div class="flex items-center justify-between">
                         <h1 class="text-2xl font-bold text-white tracking-tight">{{ current_challenge.title }}</h1>
@@ -132,79 +121,69 @@
                             {{ current_challenge.difficulty }}
                         </span>
                     </div>
-                    
                     <div class="prose prose-invert max-w-none text-zinc-300 text-sm leading-relaxed space-y-4">
                         {{ current_challenge.description | safe }}
                     </div>
                 </div>
             </section>
 
-            <!-- Right Panel: Editor & Code Runner Console -->
             <section class="w-1/2 flex flex-col bg-zinc-900 overflow-hidden">
-                <!-- Editor Header -->
                 <div class="h-12 bg-zinc-900/80 border-b border-zinc-800 px-4 flex items-center justify-between shrink-0">
                     <div class="flex items-center space-x-2">
                         <span class="text-xs font-semibold uppercase bg-zinc-800 text-amber-400 px-2 py-1 rounded border border-zinc-700/50">
-                            Python 3
+                            <i class="fa-brands fa-python mr-1"></i>Python 3
                         </span>
-                        <span id="save-status" class="text-xs text-zinc-500 italic">
-                            Saved locally
-                        </span>
+                        <span id="save-status" class="text-xs text-zinc-500 italic">Saved locally</span>
                     </div>
-                    
-                    <button onclick="resetCode()" class="text-zinc-400 hover:text-white text-xs flex items-center space-x-1.5 transition-colors duration-150 px-2.5 py-1.5 rounded hover:bg-zinc-800">
-                        <i class="fa-solid fa-rotate-left"></i>
-                        <span>Reset Code</span>
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetCode()" class="text-zinc-400 hover:text-white text-xs flex items-center space-x-1.5 transition-colors duration-150 px-2.5 py-1.5 rounded hover:bg-zinc-800">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset Code</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Code Editor Container -->
                 <div class="flex-1 relative overflow-hidden bg-[#282a36]">
                     <textarea id="editor" class="hidden">{{ current_challenge.starter_code }}</textarea>
                 </div>
 
-                <!-- Bottom Execution Panel (Console & Output) -->
                 <div id="console-panel" class="h-56 bg-zinc-950 border-t border-zinc-800 flex flex-col shrink-0 transition-all duration-200">
-                    <!-- Console Header with Tabs -->
                     <div class="bg-zinc-900/60 border-b border-zinc-800 px-4 py-2 flex items-center justify-between shrink-0">
                         <div class="flex space-x-4">
-                            <button onclick="switchConsoleTab('result')" id="tab-result" class="text-xs font-semibold text-amber-400 border-b-2 border-amber-500 pb-1 flex items-center space-x-1.5">
+                            <button onclick="switchTab('result')" id="tab-result" class="text-xs font-semibold text-amber-400 border-b-2 border-amber-500 pb-1 flex items-center space-x-1.5">
                                 <i class="fa-solid fa-terminal text-[10px]"></i>
                                 <span>Test Result</span>
                             </button>
-                            <button onclick="switchConsoleTab('stdout')" id="tab-stdout" class="text-xs font-semibold text-zinc-400 hover:text-zinc-200 pb-1 flex items-center space-x-1.5">
+                            <button onclick="switchTab('stdout')" id="tab-stdout" class="text-xs font-semibold text-zinc-400 hover:text-zinc-200 pb-1 flex items-center space-x-1.5">
                                 <i class="fa-solid fa-scroll text-[10px]"></i>
                                 <span>Standard Output</span>
                             </button>
                         </div>
                         <div class="flex items-center space-x-2">
+                            <button onclick="clearOutput()" class="text-zinc-500 hover:text-zinc-300 text-xs transition-colors" title="Clear output">
+                                <i class="fa-solid fa-eraser"></i>
+                            </button>
                             <button onclick="toggleConsoleSize()" class="text-zinc-400 hover:text-zinc-200 p-1 rounded hover:bg-zinc-800 transition-colors">
                                 <i id="console-resize-icon" class="fa-solid fa-chevron-up text-xs"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Console Content -->
                     <div class="flex-1 overflow-y-auto p-4 font-mono text-sm">
-                        <!-- Run Result Content -->
                         <div id="content-result" class="space-y-3">
                             <div id="placeholder-result" class="text-zinc-500 italic text-center py-6">
-                                Write your code and click <strong class="text-amber-500/70">"Run Code"</strong> to run test cases.
+                                Write your code and click <strong class="text-amber-500/70">"Run Code"</strong> or press <kbd class="text-xs bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">Ctrl+Enter</kbd> to run test cases.
                             </div>
-                            
-                            <div id="result-wrapper" class="hidden space-y-3">
-                                <div class="flex items-center space-x-2">
-                                    <span id="result-status-badge" class="px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                                        Accepted
-                                    </span>
+                            <div id="result-wrapper" class="hidden animate-slide-in space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <span id="result-status-badge" class="px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">Accepted</span>
+                                    </div>
+                                    <span id="result-time" class="text-[10px] text-zinc-500"></span>
                                 </div>
-                                <div id="result-message" class="text-zinc-200 bg-zinc-900 p-3 rounded-lg border border-zinc-800">
-                                    All tests passed successfully! 🎉
-                                </div>
+                                <div id="result-message" class="text-zinc-200 bg-zinc-900 p-3 rounded-lg border border-zinc-800 leading-relaxed"></div>
                             </div>
                         </div>
-
-                        <!-- Stdout Content -->
                         <div id="content-stdout" class="hidden">
                             <div id="placeholder-stdout" class="text-zinc-500 italic text-center py-6">
                                 Any print() statements in your code will appear here.
@@ -213,9 +192,8 @@
                         </div>
                     </div>
 
-                    <!-- Execution Bar (Buttons) -->
                     <div class="bg-zinc-900 border-t border-zinc-800 px-6 py-3 flex items-center justify-end space-x-3 shrink-0">
-                        <button onclick="runCode()" id="btn-run" class="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-sm rounded-lg shadow-lg shadow-orange-500/10 transition-all duration-150 flex items-center space-x-2 disabled:opacity-50">
+                        <button onclick="runCode()" id="btn-run" class="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-sm rounded-lg shadow-lg shadow-orange-500/10 transition-all duration-150 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                             <i class="fa-solid fa-play text-xs"></i>
                             <span>Run Code</span>
                         </button>
@@ -226,21 +204,17 @@
         </main>
     </div>
 
-    <!-- Script logic for interaction and execution -->
     <script>
         const challengeId = "{{ current_challenge.id }}";
         const starterCode = `{{ current_challenge.starter_code | safe }}`;
-        
+
         let editor;
         let isConsoleExpanded = false;
 
-        // Initialize CodeMirror Editor
         document.addEventListener("DOMContentLoaded", () => {
             const textarea = document.getElementById("editor");
-            
-            // Retrieve code from localStorage if it exists, otherwise use starterCode
             const savedCode = localStorage.getItem(`code_${challengeId}`);
-            
+
             editor = CodeMirror.fromTextArea(textarea, {
                 lineNumbers: true,
                 mode: "python",
@@ -249,162 +223,146 @@
                 tabSize: 4,
                 lineWrapping: true,
                 matchBrackets: true,
-                autoCloseBrackets: true
+                autoCloseBrackets: true,
+                extraKeys: {"Ctrl-Enter": runCode, "Cmd-Enter": runCode}
             });
-            
-            if (savedCode) {
-                editor.setValue(savedCode);
-            } else {
-                editor.setValue(starterCode);
-            }
 
-            // Auto-save user's progress to localStorage on changes
-            editor.on("change", (cm) => {
-                const currentVal = cm.getValue();
-                localStorage.setItem(`code_${challengeId}`, currentVal);
-                
-                const saveStatus = document.getElementById("save-status");
-                saveStatus.textContent = "Saving...";
-                setTimeout(() => {
-                    saveStatus.textContent = "Saved locally";
-                }, 500);
+            editor.setValue(savedCode || starterCode);
+
+            editor.on("change", () => {
+                localStorage.setItem(`code_${challengeId}`, editor.getValue());
+                const el = document.getElementById("save-status");
+                el.textContent = "Saving...";
+                clearTimeout(el._timer);
+                el._timer = setTimeout(() => { el.textContent = "Saved locally"; }, 500);
             });
         });
 
-        // Reset code back to default
+        document.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                e.preventDefault();
+                runCode();
+            }
+        });
+
         function resetCode() {
-            if (confirm("Are you sure you want to reset your code for this challenge? This will overwrite your current progress.")) {
+            if (confirm("Reset your code for this challenge? This will overwrite your current progress.")) {
                 editor.setValue(starterCode);
                 localStorage.removeItem(`code_${challengeId}`);
             }
         }
 
-        // Toggle Console Sizes
         function toggleConsoleSize() {
             const panel = document.getElementById("console-panel");
             const icon = document.getElementById("console-resize-icon");
             if (isConsoleExpanded) {
-                panel.style.height = "14rem"; // default 56
+                panel.style.height = "14rem";
                 icon.className = "fa-solid fa-chevron-up text-xs";
-                isConsoleExpanded = false;
             } else {
-                panel.style.height = "28rem"; // expanded
+                panel.style.height = "28rem";
                 icon.className = "fa-solid fa-chevron-down text-xs";
-                isConsoleExpanded = true;
             }
+            isConsoleExpanded = !isConsoleExpanded;
         }
 
-        // Switch Console Tabs
-        function switchConsoleTab(tab) {
-            const btnResult = document.getElementById("tab-result");
-            const btnStdout = document.getElementById("tab-stdout");
-            const contentResult = document.getElementById("content-result");
-            const contentStdout = document.getElementById("content-stdout");
-
-            if (tab === 'result') {
-                btnResult.className = "text-xs font-semibold text-amber-400 border-b-2 border-amber-500 pb-1 flex items-center space-x-1.5";
-                btnStdout.className = "text-xs font-semibold text-zinc-400 hover:text-zinc-200 pb-1 flex items-center space-x-1.5";
-                contentResult.classList.remove("hidden");
-                contentStdout.classList.add("hidden");
-            } else {
-                btnResult.className = "text-xs font-semibold text-zinc-400 hover:text-zinc-200 pb-1 flex items-center space-x-1.5";
-                btnStdout.className = "text-xs font-semibold text-amber-400 border-b-2 border-amber-500 pb-1 flex items-center space-x-1.5";
-                contentResult.classList.add("hidden");
-                contentStdout.classList.remove("hidden");
-            }
+        function switchTab(tab) {
+            const setActive = (id) => {
+                const el = document.getElementById(id);
+                if (tab === 'result') {
+                    document.getElementById('tab-result').className = "text-xs font-semibold text-amber-400 border-b-2 border-amber-500 pb-1 flex items-center space-x-1.5";
+                    document.getElementById('tab-stdout').className = "text-xs font-semibold text-zinc-400 hover:text-zinc-200 pb-1 flex items-center space-x-1.5";
+                } else {
+                    document.getElementById('tab-result').className = "text-xs font-semibold text-zinc-400 hover:text-zinc-200 pb-1 flex items-center space-x-1.5";
+                    document.getElementById('tab-stdout').className = "text-xs font-semibold text-amber-400 border-b-2 border-amber-500 pb-1 flex items-center space-x-1.5";
+                }
+            };
+            setActive(tab);
+            document.getElementById('content-result').classList.toggle('hidden', tab !== 'result');
+            document.getElementById('content-stdout').classList.toggle('hidden', tab !== 'stdout');
         }
 
-        // Run Code Execution Request
+        function clearOutput() {
+            document.getElementById('result-wrapper').classList.add('hidden');
+            document.getElementById('placeholder-result').classList.remove('hidden');
+            document.getElementById('stdout-output').classList.add('hidden');
+            document.getElementById('placeholder-stdout').classList.remove('hidden');
+            document.getElementById('stdout-output').textContent = "";
+            switchTab('result');
+        }
+
         async function runCode() {
             const btn = document.getElementById("btn-run");
             const userCode = editor.getValue();
-            
-            // UI elements
-            const placeholderResult = document.getElementById("placeholder-result");
-            const resultWrapper = document.getElementById("result-wrapper");
-            const statusBadge = document.getElementById("result-status-badge");
-            const resultMsg = document.getElementById("result-message");
-            
-            const placeholderStdout = document.getElementById("placeholder-stdout");
-            const stdoutOutput = document.getElementById("stdout-output");
 
-            // Show running state
+            const phResult = document.getElementById("placeholder-result");
+            const phStdout = document.getElementById("placeholder-stdout");
+            const wrapper = document.getElementById("result-wrapper");
+            const badge = document.getElementById("result-status-badge");
+            const msg = document.getElementById("result-message");
+            const stdoutEl = document.getElementById("stdout-output");
+            const timeEl = document.getElementById("result-time");
+
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-xs"></i> <span>Executing...</span>`;
-            
-            placeholderResult.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-amber-500 mr-2"></i> Evaluating on local runner...`;
-            placeholderResult.classList.remove("hidden");
-            resultWrapper.classList.add("hidden");
-            
-            placeholderStdout.classList.remove("hidden");
-            stdoutOutput.classList.add("hidden");
-            stdoutOutput.textContent = "";
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin text-xs"></i> <span>Executing...</span>';
+
+            phResult.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-amber-500 mr-2"></i> Evaluating on local runner...';
+            phResult.classList.remove("hidden");
+            wrapper.classList.add("hidden");
+            phStdout.classList.remove("hidden");
+            stdoutEl.classList.add("hidden");
+            stdoutEl.textContent = "";
+            timeEl.textContent = "";
+
+            switchTab('result');
 
             try {
-                const response = await fetch(`/run/${challengeId}`, {
+                const resp = await fetch(`/run/${challengeId}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ code: userCode })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({code: userCode})
                 });
-                
-                const data = await response.json();
-                
-                // Show Result Panel
-                placeholderResult.classList.add("hidden");
-                resultWrapper.classList.remove("hidden");
-                
-                // Status mapping to CSS classes
-                const status = data.status;
-                let badgeClass = "";
-                
-                if (status === "Accepted") {
-                    badgeClass = "bg-emerald-950 text-emerald-400 border border-emerald-500/30";
-                } else if (status === "Wrong Answer") {
-                    badgeClass = "bg-rose-950 text-rose-400 border border-rose-500/30";
-                } else if (status === "Runtime Error" || status === "Runtime / Compilation Error") {
-                    badgeClass = "bg-rose-950 text-rose-400 border border-rose-500/30";
-                } else if (status === "Time Limit Exceeded") {
-                    badgeClass = "bg-amber-950 text-amber-400 border border-amber-500/30";
-                } else {
-                    badgeClass = "bg-zinc-800 text-zinc-300 border border-zinc-700";
+                const data = await resp.json();
+
+                phResult.classList.add("hidden");
+                wrapper.classList.remove("hidden");
+
+                const statusClasses = {
+                    "Accepted": "bg-emerald-950 text-emerald-400 border border-emerald-500/30",
+                    "Wrong Answer": "bg-rose-950 text-rose-400 border border-rose-500/30",
+                    "Runtime Error": "bg-rose-950 text-rose-400 border border-rose-500/30",
+                    "Runtime / Compilation Error": "bg-rose-950 text-rose-400 border border-rose-500/30",
+                    "Time Limit Exceeded": "bg-amber-950 text-amber-400 border border-amber-500/30",
+                };
+                badge.className = `px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${statusClasses[data.status] || "bg-zinc-800 text-zinc-300 border border-zinc-700"}`;
+                badge.textContent = data.status;
+
+                msg.textContent = data.message;
+
+                if (data.elapsed_ms !== undefined) {
+                    timeEl.textContent = data.elapsed_ms < 1000 ? `${data.elapsed_ms}ms` : `${(data.elapsed_ms / 1000).toFixed(2)}s`;
                 }
-                
-                statusBadge.className = `px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${badgeClass}`;
-                statusBadge.textContent = status;
-                
-                resultMsg.textContent = data.message;
-                
-                // Handle STDOUT
-                if (data.stdout && data.stdout.trim() !== "") {
-                    placeholderStdout.classList.add("hidden");
-                    stdoutOutput.classList.remove("hidden");
-                    stdoutOutput.textContent = data.stdout;
-                    
-                    // Automatically switch to stdout tab if code executed but failed to give some debugging insight
-                    if (status !== "Accepted") {
-                        switchConsoleTab('stdout');
-                    } else {
-                        switchConsoleTab('result');
-                    }
+
+                if (data.stdout && data.stdout.trim()) {
+                    phStdout.classList.add("hidden");
+                    stdoutEl.classList.remove("hidden");
+                    stdoutEl.textContent = data.stdout;
+                    if (data.status !== "Accepted") switchTab('stdout');
                 } else {
-                    placeholderStdout.classList.remove("hidden");
-                    stdoutOutput.classList.add("hidden");
-                    switchConsoleTab('result');
+                    phStdout.classList.remove("hidden");
+                    stdoutEl.classList.add("hidden");
+                    switchTab('result');
                 }
-                
+
             } catch (err) {
-                placeholderResult.classList.add("hidden");
-                resultWrapper.classList.remove("hidden");
-                statusBadge.className = "px-3 py-1 rounded text-xs font-bold uppercase tracking-wider bg-rose-950 text-rose-400 border border-rose-500/30";
-                statusBadge.textContent = "Error";
-                resultMsg.textContent = "Network error: Failed to connect to local execution server.";
-                switchConsoleTab('result');
+                phResult.classList.add("hidden");
+                wrapper.classList.remove("hidden");
+                badge.className = "px-3 py-1 rounded text-xs font-bold uppercase tracking-wider bg-rose-950 text-rose-400 border border-rose-500/30";
+                badge.textContent = "Error";
+                msg.textContent = "Network error: failed to connect to local execution server.";
+                switchTab('result');
             } finally {
-                // Restore button state
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-play text-xs"></i> <span>Run Code</span>`;
+                btn.innerHTML = '<i class="fa-solid fa-play text-xs"></i> <span>Run Code</span>';
             }
         }
     </script>
