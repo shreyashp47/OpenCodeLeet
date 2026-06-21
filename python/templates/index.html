@@ -22,6 +22,7 @@
         .animate-slide-in { animation: slideIn 0.2s ease-out; }
         .CodeMirror .error-line-bg { background: rgba(239, 68, 68, 0.15) !important; }
         .CodeMirror .error-line-gutter { background: rgba(239, 68, 68, 0.3) !important; }
+        .description-body pre { background: #1f2937 !important; color: #f3f4f6 !important; padding: 0.75rem !important; border-radius: 0.5rem !important; font-family: ui-monospace, monospace !important; font-size: 0.875rem !important; margin-bottom: 1rem !important; overflow-x: auto !important; }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
@@ -123,7 +124,7 @@
                             {{ current_challenge.difficulty }}
                         </span>
                     </div>
-                    <div class="prose prose-invert max-w-none text-zinc-300 text-sm leading-relaxed space-y-4">
+                    <div class="prose prose-invert max-w-none text-zinc-300 text-sm leading-relaxed space-y-4 description-body">
                         {{ current_challenge.description | safe }}
                     </div>
                 </div>
