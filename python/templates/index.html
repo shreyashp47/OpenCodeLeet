@@ -20,6 +20,8 @@
         ::-webkit-scrollbar-thumb:hover { background: #52525b; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         .animate-slide-in { animation: slideIn 0.2s ease-out; }
+        .CodeMirror .error-line-bg { background: rgba(239, 68, 68, 0.15) !important; }
+        .CodeMirror .error-line-gutter { background: rgba(239, 68, 68, 0.3) !important; }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
@@ -143,6 +145,13 @@
                     </div>
                 </div>
 
+                <div id="error-line-banner" class="hidden h-8 bg-rose-950/60 border-b border-rose-800/50 px-4 flex items-center space-x-2 shrink-0">
+                    <i class="fa-solid fa-circle-exclamation text-rose-400 text-xs"></i>
+                    <span id="error-line-text" class="text-rose-200 text-xs font-mono"></span>
+                    <button onclick="clearErrorLine()" class="ml-auto text-rose-400/60 hover:text-rose-300 text-xs transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
                 <div class="flex-1 relative overflow-hidden bg-[#282a36]">
                     <textarea id="editor" class="hidden">{{ current_challenge.starter_code }}</textarea>
                 </div>
@@ -251,6 +260,7 @@
             editor.setValue(savedCode || starterCode);
 
             editor.on("change", () => {
+                clearErrorLine();
                 localStorage.setItem(`code_${challengeId}`, editor.getValue());
                 const el = document.getElementById("save-status");
                 el.textContent = "Saving...";
@@ -313,7 +323,34 @@
             document.getElementById('content-stdout').classList.toggle('hidden', tab !== 'stdout');
         }
 
+        let _errorLine = null;
+
+        function clearErrorLine() {
+            document.getElementById("error-line-banner").classList.add("hidden");
+            if (_errorLine !== null && editor) {
+                editor.removeLineClass(_errorLine - 1, "background", "error-line-bg");
+                editor.removeLineClass(_errorLine - 1, "gutter", "error-line-gutter");
+                _errorLine = null;
+            }
+        }
+
+        function showErrorLine(line) {
+            clearErrorLine();
+            if (!line || !editor) return;
+            _errorLine = line;
+            const lineno = line - 1;
+            if (lineno >= 0 && lineno < editor.lineCount()) {
+                editor.addLineClass(lineno, "background", "error-line-bg");
+                editor.addLineClass(lineno, "gutter", "error-line-gutter");
+                editor.scrollIntoView({line: lineno, ch: 0}, 50);
+                editor.setCursor(lineno, 0);
+            }
+            document.getElementById("error-line-text").textContent = `Error near line ${line}`;
+            document.getElementById("error-line-banner").classList.remove("hidden");
+        }
+
         function clearOutput() {
+            clearErrorLine();
             document.getElementById('result-wrapper').classList.add('hidden');
             document.getElementById('placeholder-result').classList.remove('hidden');
             document.getElementById('stdout-output').classList.add('hidden');
@@ -412,6 +449,8 @@
                     stdoutEl.classList.add("hidden");
                     switchTab('result');
                 }
+
+                showErrorLine(data.error_line);
 
                 const failKey = `fails_${challengeId}`;
                 let fails = parseInt(localStorage.getItem(failKey) || "0");

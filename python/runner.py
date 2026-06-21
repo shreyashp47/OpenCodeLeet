@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -35,6 +36,11 @@ class CodeRunner:
             except OSError:
                 pass
 
+    @staticmethod
+    def _parse_error_line(text):
+        match = re.search(r'line (\d+)', text)
+        return int(match.group(1)) if match else None
+
     def _parse(self, result, elapsed):
         stdout = result.stdout
         stderr = result.stderr
@@ -55,12 +61,13 @@ class CodeRunner:
         elif "ERROR:" in stdout:
             line = next((l for l in stdout.split("\n") if "ERROR:" in l), "")
             msg = line.replace("ERROR:", "").strip()
-            resp.update(success=False, status="Runtime Error", message=msg)
+            resp.update(success=False, status="Runtime Error", message=msg, error_line=self._parse_error_line(msg))
         elif stderr:
             resp.update(
                 success=False,
                 status="Runtime / Compilation Error",
                 message=stderr.strip().split("\n")[-1],
+                error_line=self._parse_error_line(stderr),
             )
         else:
             resp.update(
