@@ -16,7 +16,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(DIFFICULTY_ORDER, ['Easy', 'Medium', 'Hard'])
 
     def test_all_challenges_have_required_fields(self):
-        required = {'id', 'title', 'difficulty', 'description', 'starter_code', 'test_code'}
+        required = {'id', 'title', 'difficulty', 'description', 'starter_code', 'solution_code', 'test_code'}
         for cid, ch in CHALLENGES.items():
             with self.subTest(challenge=cid):
                 self.assertEqual(cid, ch['id'])

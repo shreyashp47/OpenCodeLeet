@@ -39,6 +39,15 @@ CHALLENGES = {
     def twoSum(self, nums: list[int], target: int) -> list[int]:
         pass
 """,
+        "solution_code": """class Solution:
+    def twoSum(self, nums: list[int], target: int) -> list[int]:
+        lookup = {}
+        for i, num in enumerate(nums):
+            complement = target - num
+            if complement in lookup:
+                return [lookup[complement], i]
+            lookup[num] = i
+""",
         "test_code": """
 if __name__ == "__main__":
     try:
@@ -89,6 +98,14 @@ if __name__ == "__main__":
         Do not return anything, modify s in-place instead.
         \"\"\"
         pass
+""",
+        "solution_code": """class Solution:
+    def reverseString(self, s: list[str]) -> None:
+        left, right = 0, len(s) - 1
+        while left < right:
+            s[left], s[right] = s[right], s[left]
+            left += 1
+            right -= 1
 """,
         "test_code": """
 if __name__ == "__main__":
@@ -144,6 +161,16 @@ if __name__ == "__main__":
         "starter_code": """class Solution:
     def isPalindrome(self, x: int) -> bool:
         pass
+""",
+        "solution_code": """class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0 or (x % 10 == 0 and x != 0):
+            return False
+        reversed_half = 0
+        while x > reversed_half:
+            reversed_half = reversed_half * 10 + x % 10
+            x //= 10
+        return x == reversed_half or x == reversed_half // 10
 """,
         "test_code": """
 if __name__ == "__main__":
@@ -203,6 +230,18 @@ if __name__ == "__main__":
     def isValid(self, s: str) -> bool:
         pass
 """,
+        "solution_code": """class Solution:
+    def isValid(self, s: str) -> bool:
+        pairs = {')': '(', '}': '{', ']': '['}
+        stack = []
+        for ch in s:
+            if ch in pairs:
+                if not stack or stack.pop() != pairs[ch]:
+                    return False
+            else:
+                stack.append(ch)
+        return not stack
+""",
         "test_code": """
 if __name__ == "__main__":
     try:
@@ -254,6 +293,17 @@ if __name__ == "__main__":
         "starter_code": """class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
         pass
+""",
+        "solution_code": """class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        seen = {}
+        left = result = 0
+        for right, ch in enumerate(s):
+            if ch in seen and seen[ch] >= left:
+                left = seen[ch] + 1
+            seen[ch] = right
+            result = max(result, right - left + 1)
+        return result
 """,
         "test_code": """
 if __name__ == "__main__":
@@ -316,6 +366,30 @@ The distinct triplets are [-1,0,1] and [-1,-1,2].
     def threeSum(self, nums: list[int]) -> list[list[int]]:
         pass
 """,
+        "solution_code": """class Solution:
+    def threeSum(self, nums: list[int]) -> list[list[int]]:
+        nums.sort()
+        result = []
+        for i in range(len(nums) - 2):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+            left, right = i + 1, len(nums) - 1
+            while left < right:
+                total = nums[i] + nums[left] + nums[right]
+                if total < 0:
+                    left += 1
+                elif total > 0:
+                    right -= 1
+                else:
+                    result.append([nums[i], nums[left], nums[right]])
+                    while left < right and nums[left] == nums[left + 1]:
+                        left += 1
+                    while left < right and nums[right] == nums[right - 1]:
+                        right -= 1
+                    left += 1
+                    right -= 1
+        return result
+""",
         "test_code": """
 if __name__ == "__main__":
     try:
@@ -370,6 +444,17 @@ if __name__ == "__main__":
     def groupAnagrams(self, strs: list[str]) -> list[list[str]]:
         pass
 """,
+        "solution_code": """class Solution:
+    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:
+        groups = {}
+        for s in strs:
+            key = "".join(sorted(s))
+            if key in groups:
+                groups[key].append(s)
+            else:
+                groups[key] = [s]
+        return list(groups.values())
+""",
         "test_code": """
 if __name__ == "__main__":
     try:
@@ -417,6 +502,25 @@ if __name__ == "__main__":
         "starter_code": """class Solution:
     def trap(self, height: list[int]) -> int:
         pass
+""",
+        "solution_code": """class Solution:
+    def trap(self, height: list[int]) -> int:
+        left, right = 0, len(height) - 1
+        left_max = right_max = water = 0
+        while left < right:
+            if height[left] < height[right]:
+                if height[left] >= left_max:
+                    left_max = height[left]
+                else:
+                    water += left_max - height[left]
+                left += 1
+            else:
+                if height[right] >= right_max:
+                    right_max = height[right]
+                else:
+                    water += right_max - height[right]
+                right -= 1
+        return water
 """,
         "test_code": """
 if __name__ == "__main__":
@@ -476,6 +580,17 @@ if __name__ == "__main__":
     def firstMissingPositive(self, nums: list[int]) -> int:
         pass
 """,
+        "solution_code": """class Solution:
+    def firstMissingPositive(self, nums: list[int]) -> int:
+        n = len(nums)
+        for i in range(n):
+            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:
+                nums[nums[i] - 1], nums[i] = nums[i], nums[nums[i] - 1]
+        for i in range(n):
+            if nums[i] != i + 1:
+                return i + 1
+        return n + 1
+""",
         "test_code": """
 if __name__ == "__main__":
     try:
@@ -527,6 +642,30 @@ if __name__ == "__main__":
         "starter_code": """class Solution:
     def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
         pass
+""",
+        "solution_code": """class Solution:
+    def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+        m, n = len(nums1), len(nums2)
+        total = m + n
+        half = total // 2
+        left, right = 0, m
+        while left <= right:
+            i = (left + right) // 2
+            j = half - i
+            left1 = nums1[i - 1] if i > 0 else float("-inf")
+            right1 = nums1[i] if i < m else float("inf")
+            left2 = nums2[j - 1] if j > 0 else float("-inf")
+            right2 = nums2[j] if j < n else float("inf")
+            if left1 <= right2 and left2 <= right1:
+                if total % 2:
+                    return min(right1, right2)
+                return (max(left1, left2) + min(right1, right2)) / 2
+            elif left1 > right2:
+                right = i - 1
+            else:
+                left = i + 1
 """,
         "test_code": """
 if __name__ == "__main__":

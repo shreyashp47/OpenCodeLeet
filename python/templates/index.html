@@ -183,6 +183,26 @@
                                 </div>
                                 <div id="result-message" class="text-zinc-200 bg-zinc-900 p-3 rounded-lg border border-zinc-800 leading-relaxed"></div>
                             </div>
+                            <div id="solution-section" class="hidden animate-slide-in pt-2 border-t border-zinc-800">
+                                <div id="solution-fail-banner" class="text-amber-400 text-xs mb-2 flex items-center space-x-2">
+                                    <i class="fa-solid fa-lightbulb"></i>
+                                    <span id="solution-fail-text"></span>
+                                </div>
+                                <button onclick="toggleSolution()" id="btn-solution" class="text-xs text-amber-400 hover:text-amber-300 border border-amber-500/30 hover:border-amber-500/50 px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-eye"></i>
+                                    <span>Show Solution</span>
+                                </button>
+                                <div id="solution-code-block" class="hidden mt-2 bg-zinc-900 border border-zinc-700/50 rounded-lg overflow-hidden">
+                                    <div class="flex items-center justify-between px-3 py-1.5 bg-zinc-800/50 border-b border-zinc-700/50">
+                                        <span class="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">Reference Solution</span>
+                                        <button onclick="useSolution()" class="text-[10px] text-amber-400 hover:text-amber-300 flex items-center space-x-1 transition-colors">
+                                            <i class="fa-solid fa-paste"></i>
+                                            <span>Use in Editor</span>
+                                        </button>
+                                    </div>
+                                    <pre class="text-xs text-zinc-200 p-3 overflow-x-auto leading-relaxed"><code id="solution-code-display"></code></pre>
+                                </div>
+                            </div>
                         </div>
                         <div id="content-stdout" class="hidden">
                             <div id="placeholder-stdout" class="text-zinc-500 italic text-center py-6">
@@ -207,6 +227,7 @@
     <script>
         const challengeId = "{{ current_challenge.id }}";
         const starterCode = `{{ current_challenge.starter_code | safe }}`;
+        const solutionCode = `{{ current_challenge.solution_code | safe }}`;
 
         let editor;
         let isConsoleExpanded = false;
@@ -236,6 +257,12 @@
                 clearTimeout(el._timer);
                 el._timer = setTimeout(() => { el.textContent = "Saved locally"; }, 500);
             });
+
+            const savedFails = parseInt(localStorage.getItem(`fails_${challengeId}`) || "0");
+            if (savedFails >= 3) {
+                showSolution();
+                document.getElementById("solution-code-block").classList.add("hidden");
+            }
         });
 
         document.addEventListener("keydown", (e) => {
@@ -249,6 +276,11 @@
             if (confirm("Reset your code for this challenge? This will overwrite your current progress.")) {
                 editor.setValue(starterCode);
                 localStorage.removeItem(`code_${challengeId}`);
+                localStorage.removeItem(`fails_${challengeId}`);
+                document.getElementById("solution-section").classList.add("hidden");
+                document.getElementById("solution-code-block").classList.add("hidden");
+                document.getElementById("result-wrapper").classList.add("hidden");
+                document.getElementById("placeholder-result").classList.remove("hidden");
             }
         }
 
@@ -288,6 +320,34 @@
             document.getElementById('placeholder-stdout').classList.remove('hidden');
             document.getElementById('stdout-output').textContent = "";
             switchTab('result');
+        }
+
+        function showSolution() {
+            const section = document.getElementById("solution-section");
+            section.classList.remove("hidden");
+            document.getElementById("solution-fail-text").textContent = "You've attempted this challenge 3+ times. Here's a reference solution:";
+            document.getElementById("solution-code-display").textContent = solutionCode;
+        }
+
+        function toggleSolution() {
+            const block = document.getElementById("solution-code-block");
+            const btn = document.getElementById("btn-solution");
+            if (block.classList.contains("hidden")) {
+                block.classList.remove("hidden");
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> <span>Hide Solution</span>';
+            } else {
+                block.classList.add("hidden");
+                btn.innerHTML = '<i class="fa-solid fa-eye"></i> <span>Show Solution</span>';
+            }
+        }
+
+        function useSolution() {
+            if (confirm("Replace your current code with the reference solution?")) {
+                editor.setValue(solutionCode);
+                const section = document.getElementById("solution-section");
+                section.classList.add("hidden");
+                document.getElementById("solution-code-block").classList.add("hidden");
+            }
         }
 
         async function runCode() {
@@ -351,6 +411,27 @@
                     phStdout.classList.remove("hidden");
                     stdoutEl.classList.add("hidden");
                     switchTab('result');
+                }
+
+                const failKey = `fails_${challengeId}`;
+                let fails = parseInt(localStorage.getItem(failKey) || "0");
+                if (data.success) {
+                    fails = 0;
+                    localStorage.removeItem(failKey);
+                    document.getElementById("solution-section").classList.add("hidden");
+                    document.getElementById("solution-code-block").classList.add("hidden");
+                } else if (data.status !== "Error" && data.status !== "System Error") {
+                    fails += 1;
+                    localStorage.setItem(failKey, fails.toString());
+                    if (fails >= 3) {
+                        showSolution();
+                    } else {
+                        document.getElementById("solution-section").classList.remove("hidden");
+                        document.getElementById("solution-fail-text").textContent = `${fails}/3 failed attempts — after 3 tries, you can view the solution.`;
+                        document.getElementById("solution-code-block").classList.add("hidden");
+                    }
+                } else {
+                    document.getElementById("solution-section").classList.add("hidden");
                 }
 
             } catch (err) {
