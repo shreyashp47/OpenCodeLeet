@@ -1,0 +1,6 @@
+APP_NAME = "OpenCodeLeet"
+APP_VERSION = "2.0.0"
+HOST = "127.0.0.1"
+PORT = 5000
+DEBUG = True
+EXECUTION_TIMEOUT = 3.0
