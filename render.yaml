@@ -1,7 +1,7 @@
 services:
   - type: web
     name: opencodeleet
-    runtime: image
+    runtime: docker
     plan: free
     repo: https://github.com/shreyashp47/OpenCodeLeet
     dockerfilePath: ./Dockerfile
