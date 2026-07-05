@@ -26,6 +26,18 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 To solve challenges in Kotlin, install the [Kotlin compiler](https://kotlinlang.org). Choose your language from the dropdown in the editor toolbar — the server will use `kotlinc` + `java -jar` to compile and run.
 
+## Deploy to Render (Free)
+
+[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?logo=render&logoColor=white)](https://dashboard.render.com/blueprints)
+
+1. Push this repo to GitHub
+2. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints)
+3. Click **New Blueprint** and connect your repo
+4. The included `render.yaml` and `Dockerfile` will automatically build and deploy
+5. Your app will be live at `https://opencodeleet.onrender.com`
+
+> **Note:** Render's free tier spins down after 15 min of inactivity. First request after idle takes ~30s to wake up.
+
 ## Features
 
 - **Dual language support** — switch between Python and Kotlin per challenge, code saved independently per language
@@ -79,6 +91,9 @@ challenges/             One .py file per challenge (auto-imported)
 ├── trapping-rain-water.py
 ├── first-missing-positive.py
 └── median-two-arrays.py
+Dockerfile            Container image (Python 3.11 + JDK 17 + Kotlin 2.1)
+render.yaml           Render Blueprint config for one-click deploy
+requirements.txt      Python dependencies (Flask)
 python/
 ├── app.py              Flask routes and server entrypoint
 ├── loader.py           Auto-imports challenge files, strips title numbers
