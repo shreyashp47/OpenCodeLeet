@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: opencodeleet
+    runtime: image
+    plan: free
+    repo: https://github.com/YOUR_USERNAME/YOUR_REPO
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DEBUG
+        value: false
