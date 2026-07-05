@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
-    openjdk-17-jdk \
+    default-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 ENV KOTLIN_VERSION=2.1.0
