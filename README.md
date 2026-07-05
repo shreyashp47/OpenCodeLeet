@@ -34,7 +34,7 @@ To solve challenges in Kotlin, install the [Kotlin compiler](https://kotlinlang.
 2. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints)
 3. Click **New Blueprint** and connect your repo
 4. The included `render.yaml` and `Dockerfile` will automatically build and deploy
-5. Your app will be live at `https://opencodeleet.onrender.com`
+5. The site is live at **[https://opencodeleet.onrender.com/](https://opencodeleet.onrender.com/)**
 
 > **Note:** Render's free tier spins down after 15 min of inactivity. First request after idle takes ~30s to wake up.
 
